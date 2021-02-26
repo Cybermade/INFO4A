@@ -10,7 +10,6 @@ class Labyrinthe
 private:
     int NB_LIGNES;
     int NB_COLONNES;
-    char lel;
     char AFF_VIDE = '-'; //Caractère représentant les cases vides pour l’affichage
     char AFF_MUR = 'X';  //Caractère représentant les murs pour l’affichage
     char AFF_BORD = ' ';
@@ -34,6 +33,6 @@ public:
     char lit(int ligne, int colonne);
     bool connexe();
     void genLaby(int nb);
-    //int distMin(int id1, int id2);*/
+    int distMin(int id1, int id2);
 };
 #endif
