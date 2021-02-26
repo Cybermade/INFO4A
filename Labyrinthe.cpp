@@ -29,8 +29,8 @@ Labyrinthe::Labyrinthe(char data[])
     Grille=new char[NB_LIGNES*NB_COLONNES];
     Pile=new int[NB_LIGNES*NB_COLONNES];
     
-    for(int i=2;i<(NB_LIGNES*NB_COLONNES);i++)
-        Grille[i]=data[i];
+    for(int i=0;i<(NB_LIGNES*NB_COLONNES);i++)
+        Grille[i]=data[i+2];
 }
 int Labyrinthe::getLongueur()
 {
@@ -45,24 +45,28 @@ void Labyrinthe::affiche()
    
 
     for (int l = 0; l < NB_COLONNES + 2; l++)
-        printf("%c ", AFF_BORD); //BORD HAUT (on doit aller avant la premiere colonne jusqu'à une fois aprés la derniére c'est pour ça le l<NB_COLONNES+2)
-    
+        {putchar(AFF_BORD);
+        putchar(' '); //BORD HAUT (on doit aller avant la premiere colonne jusqu'à une fois aprés la derniére c'est pour ça le l<NB_COLONNES+2)
+        }
     printf("\n");
     for (int m = 0; m < NB_LIGNES; m++)
-    {   printf("%c ", AFF_BORD);   //On commence le bord a gauche
+    {   putchar(AFF_BORD);
+        putchar(' ');   //On commence le bord a gauche
         for (int l = 0; l < NB_COLONNES; l++)
         {
             if (lit(m, l))
-                printf("%c ", AFF_MUR);
+                putchar(AFF_MUR);
             else
-                printf("%c ", AFF_VIDE);
+                putchar(AFF_VIDE);
+            putchar(' ');
         }
         
         printf("%c\n", AFF_BORD); //on termine a droite
     }
     for (int l = 0; l < NB_COLONNES + 2; l++)
-        printf("%c ", AFF_BORD); //BORD BAS
-
+        {putchar(AFF_BORD);
+        putchar(' '); //BORD BAS
+        }
 
 }
 int Labyrinthe::getID(int ligne, int colonne)
@@ -104,7 +108,7 @@ bool Labyrinthe::connexe()
     modifie( getLigne(id), getCol(id), 2) ;
     if (!nbcasesb)
     {
-        printf("Erreur Pas de cases blanches");
+        puts("Erreur Pas de cases blanches");
         exit(0);
     }
     push(id);
@@ -168,7 +172,7 @@ void Labyrinthe::genLaby(int k)
     printf("Want %d\n",k);
     if (k > (NB_LIGNES * NB_COLONNES))
     {
-        printf("\nPas possible d'avoir plus de cases blanches que le nombre de cases totale\n");
+        puts("\nPas possible d'avoir plus de cases blanches que le nombre de cases totale\n");
         exit(0);
     }
     k = k - 2;     //j'enléve 2 du nombre voulu(première et derniére)
@@ -203,6 +207,61 @@ void Labyrinthe::genLaby(int k)
             
     }
     printf("Have %d\n", K+2);
+}
+int Labyrinthe::distMin(int id1,int id2)//djikstra
+{
+    int P[NB_LIGNES*NB_COLONNES]={0};
+    int utilise[NB_LIGNES*NB_COLONNES]={0};
+    int Comp=0,nbcasesb=0,min=NB_LIGNES*NB_COLONNES;
+    int idtemp;
+    int l,c;
+    for(int i=0;i<NB_LIGNES*NB_COLONNES;i++)
+    {
+        if(!Grille[i])
+            {P[i]=NB_LIGNES*NB_COLONNES;
+            nbcasesb++; 
+            utilise[i]=0;
+                      
+            }
+        else
+            {P[i]=-1;
+            utilise[i]=-1; 
+            }
+    }
+    
+    P[id1]=0;
+    
+    while(nbcasesb!=Comp)
+    {for(int i=0;i<(NB_LIGNES*NB_COLONNES);i++)
+    {   //printf("P[%d]=%d",i,P[i]);
+        if(P[i]!=-1 && P[i]<min && utilise[i]==0)
+            {min=P[i];
+            idtemp=i;
+            
+            
+            }
+    }
+    utilise[idtemp]=1;
+    //printf("idtemp = %d \n",idtemp);
+    Comp++;
+    l=getLigne(idtemp);
+    c=getCol(idtemp);
+    if ( l-1>=0  && P[getID(l-1,c)]>(P[idtemp]+1) && utilise[getID(l-1,c)]==0 )
+        P[getID(l-1,c)]=P[idtemp]+1;//printf("aa %d\n",P[getID(l-1,c)]);}
+    if ( l+1<NB_LIGNES  && P[getID(l+1,c)]>(P[idtemp]+1) && utilise[getID(l+1,c)]==0 )
+        P[getID(l+1,c)]=P[idtemp]+1;//printf("mm %d \n", P[getID(l+1,c)]); }
+    if ( c-1>=0  && P[getID(l,c-1)]>(P[idtemp]+1) && utilise[getID(l,c-1)]==0 )
+        P[getID(l,c-1)]=P[idtemp]+1;//printf("nn %d \n", P[getID(l,c-1)]); }
+    if ( c+1<NB_COLONNES  && P[getID(l,c+1)]>(P[idtemp]+1) && utilise[getID(l,c+1)]==0 )
+        P[getID(l,c+1)]=P[idtemp]+1;//printf("ss %d \n",P[getID(l,c+1)]);}
+    min=NB_LIGNES*NB_COLONNES;
+    }
+
+    
+
+    return P[id2];
+    
+    
 }
 Labyrinthe::~Labyrinthe()
 {
