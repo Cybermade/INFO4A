@@ -1,11 +1,15 @@
+// HAMIDOU Mohammed Nazim IE4-I911
+// Compilation : gcc P2.c -o P2 -Wall
+// Lancement : ./P2
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <math.h>
 
-int NB_COLONNES = 30; //longueur
-int NB_LIGNES = 20;   //largeur
+int NB_COLONNES = 60; //longueur
+int NB_LIGNES = 30;   //largeur
 char AFF_VIDE = '-'; //Caractère représentant les cases vides pour l’affichage
 char AFF_MUR = 'X';  //Caractère représentant les murs pour l’affichage
 char AFF_BORD = '0'; //Caractère représentant les bords pour l’affichage
@@ -104,47 +108,48 @@ int connexe()
 
 void GenLaby(int k) //backtrack simple
 {
-    int temp=0, IDlast, IDAvantModif, temp3 = 0;
-    int K = 0;
+    int id=0, IDlast, IDAvantModif, limite = 0;
+    int K = 0;//nbr cases vides 
     IDlast = getID(NB_LIGNES - 1, NB_COLONNES - 1); // derniére case
 
-    if (k > (NB_LIGNES * NB_COLONNES))
+    if (k > (NB_LIGNES * NB_COLONNES) || k <= 0)
     {
-        printf("\nPas possible d'avoir plus de cases blanches que le nombre de cases totale\n");
+        if(k>(NB_LIGNES * NB_COLONNES))printf("\nPas possible d'avoir plus de cases blanches que le nombre de cases totale\n");
+        else if(k<=0)printf("\nPas possible d'avoir un nombre négatif ou égal à 0\n");
         exit(0);
     }
     k = k - 2;     //j'enléve 2 du nombre voulu(première et derniére)
     K = NB_COLONNES * NB_LIGNES - 2; //j'enléve 2 du nombre totale de cases blanches(première et derniére)
 
-    while (k != K && !(temp3 > (NB_COLONNES * NB_LIGNES)))
+    while (k != K && !(limite > (NB_COLONNES * NB_LIGNES)))
     {
         
 
-        while (temp == 0 || temp == IDlast)
-            temp = rand() % (NB_COLONNES * NB_LIGNES - 1); //je refais tant que j'ai une id de la premiere ou de la derniere case
+        while (id == 0 || id == IDlast)
+            id = rand() % (NB_COLONNES * NB_LIGNES - 1); //je refais tant que j'ai une id de la premiere ou de la derniere case
 
-        IDAvantModif = lit(getLigne(temp), getCol(temp)); //je prends la valeure de la case si elle était blanche(0) ou noire(1)
+        IDAvantModif = lit(getLigne(id), getCol(id)); //je prends la valeure de la case si elle était blanche(0) ou noire(1)
 
-        modifie(getLigne(temp), getCol(temp), 1);
+        modifie(getLigne(id), getCol(id), 1);
 
         if (connexe() && !IDAvantModif) //je test en ayant mit le case en noir si c'est toujours connexe et la case d'avant était bien blanche
         {
             K--; //car si je mets noir sur noir ça ne sert a rien
-            temp3 = 0;
+            limite = 0;
         }
         else if (!IDAvantModif)
         {
-            modifie(getLigne(temp), getCol(temp), 0);
+            modifie(getLigne(id), getCol(id), 0);
 
         } //si elle était blanche et je l'ai noircie mais elle était critique je reviens en arriére(Backtrack)
 
         else
-            temp3++; //si je rentre dans la boucle et je fais rien je temp3++
+            limite++; //si je rentre dans la boucle et je fais rien je limite++
 
-        temp=0;       
+        id=0;       
             
     }
-    printf("Have %d\n", K+2);
+    printf("J'ai %d cases blanches\n", K+2);
 }
 
 int getID(int ligne, int colonne)
@@ -193,14 +198,15 @@ int main()
     Grille = (char *)calloc(NB_LIGNES * NB_COLONNES, sizeof(char));
     Pile=(int *)calloc(NB_LIGNES * NB_COLONNES, sizeof(int));
     srand(time(NULL));
-    int k=350;
+    int k=900;
 
-    affiche();
-    printf("\n");
-    printf("Want %d\n", k);
+    
+    
+    printf("Je veux %d cases blanches\n", k);
     GenLaby(k);
 
     affiche();
+    printf("\n");
 
     /*if (connexe())
         printf("\nC'est un Labyrinthe");
